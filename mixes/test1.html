@@ -1,3 +1,30 @@
+
+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Eye level test · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,14 +150,14 @@
   </div>
   <footer>
     <span class="note">for your ears only</span>
-    <a id="downloadLink" href="__AUDIO_SRC__" download>download file</a>
+    <a id="downloadLink" href="../audio/peyman-salimi-eye-level.mp3" download>download file</a>
   </footer>
 </main>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.4/wavesurfer.min.js"></script>
 <script>
-  document.getElementById('title').textContent = "__TITLE__";
-
+  document.getElementById('title').textContent = "Eye-Level";
+ 
   const wavesurfer = WaveSurfer.create({
     container: '#waveform',
     waveColor: '#3a3430',
@@ -143,22 +170,22 @@
     responsive: true,
     normalize: true,
   });
-
-  wavesurfer.load('__AUDIO_SRC__');
-
+ 
+  wavesurfer.load('../audio/peyman-salimi-eye-level.mp3');
+ 
   const playBtn = document.getElementById('playBtn');
   const playIcon = document.getElementById('playIcon');
   const pauseIcon = document.getElementById('pauseIcon');
   const currentTimeEl = document.getElementById('currentTime');
   const durationEl = document.getElementById('duration');
-
+ 
   function fmt(sec) {
     if (!isFinite(sec)) return '0:00';
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   }
-
+ 
   wavesurfer.on('ready', () => {
     durationEl.textContent = fmt(wavesurfer.getDuration());
   });
@@ -182,8 +209,9 @@
     playIcon.style.display = '';
     pauseIcon.style.display = 'none';
   });
-
+ 
   playBtn.addEventListener('click', () => wavesurfer.playPause());
 </script>
 </body>
 </html>
+ 
