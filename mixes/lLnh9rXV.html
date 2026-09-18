@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eye level demo 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14110f;
+    --surface: #1b1714;
+    --line: #2a241f;
+    --text: #f2ece1;
+    --text-dim: #9c9086;
+    --accent: #c98a3b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% -10%, #201a15 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  main {
+    width: 100%;
+    max-width: 620px;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.6s ease-out forwards;
+  }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .label {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.15;
+    margin: 0 0 32px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 24px;
+    word-break: break-word;
+  }
+  #waveform { cursor: pointer; }
+  .transport {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  button#playBtn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s ease;
+  }
+  button#playBtn:hover { border-color: var(--accent); }
+  button#playBtn svg { width: 16px; height: 16px; fill: currentColor; }
+  .time {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  footer {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+  footer .note {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  footer a {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  footer a:hover { color: var(--accent); border-color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) {
+    main { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="label">private mix</p>
+  <h1 id="title"></h1>
+  <div id="waveform"></div>
+  <div class="transport">
+    <button id="playBtn" aria-label="Play">
+      <svg id="playIcon" viewBox="0 0 16 16"><path d="M3 1.5v13l11-6.5-11-6.5z"/></svg>
+      <svg id="pauseIcon" viewBox="0 0 16 16" style="display:none"><path d="M3 1.5h3.5v13H3v-13zm6.5 0H13v13H9.5v-13z"/></svg>
+    </button>
+    <span class="time"><span id="currentTime">0:00</span> / <span id="duration">0:00</span></span>
+  </div>
+  <footer>
+    <span class="note">for your ears only</span>
+    <a id="downloadLink" href="../audio/lLnh9rXV.mp3" download>download file</a>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.4/wavesurfer.min.js"></script>
+<script>
+  document.getElementById('title').textContent = "eye level demo 1";
+
+  const wavesurfer = WaveSurfer.create({
+    container: '#waveform',
+    waveColor: '#3a3430',
+    progressColor: '#c98a3b',
+    cursorColor: '#f2ece1',
+    barWidth: 2,
+    barGap: 2,
+    barRadius: 1,
+    height: 88,
+    responsive: true,
+    normalize: true,
+  });
+
+  wavesurfer.load('../audio/lLnh9rXV.mp3');
+
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationEl = document.getElementById('duration');
+
+  function fmt(sec) {
+    if (!isFinite(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  wavesurfer.on('ready', () => {
+    durationEl.textContent = fmt(wavesurfer.getDuration());
+  });
+  wavesurfer.on('audioprocess', () => {
+    currentTimeEl.textContent = fmt(wavesurfer.getCurrentTime());
+  });
+  wavesurfer.on('seek', () => {
+    currentTimeEl.textContent = fmt(wavesurfer.getCurrentTime());
+  });
+  wavesurfer.on('play', () => {
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = '';
+    playBtn.setAttribute('aria-label', 'Pause');
+  });
+  wavesurfer.on('pause', () => {
+    playIcon.style.display = '';
+    pauseIcon.style.display = 'none';
+    playBtn.setAttribute('aria-label', 'Play');
+  });
+  wavesurfer.on('finish', () => {
+    playIcon.style.display = '';
+    pauseIcon.style.display = 'none';
+  });
+
+  playBtn.addEventListener('click', () => wavesurfer.playPause());
+</script>
+</body>
+</html>
